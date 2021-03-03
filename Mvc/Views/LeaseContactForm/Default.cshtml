@@ -1,0 +1,109 @@
+﻿@using Telerik.Sitefinity.Frontend.Mvc.Helpers;
+@using SitefinityWebApp.Extensions;
+@using SitefinityWebApp.Mvc.Models
+@using Telerik.Sitefinity.Localization;
+@using SitefinityWebApp.Mvc.Resources
+@using Telerik.Sitefinity.UI.MVC
+
+@model SitefinityWebApp.Mvc.Models.LeaseContactFormModel
+
+<script type="text/javascript">
+    var gLeaseContactSubmitUrl = '@Url.Action("Submit")';
+
+    // Add id="aspnetForm" to the form tag since Sitefinity scripts require that
+    $("form").attr("id", "aspnetForm");
+</script>
+
+@using (Html.BeginFormSitefinity())
+{
+    @Html.AntiForgeryToken()
+
+    <div id="leaseContactForm">
+        <div class="form-block centered" role="form" aria-label="Lease contact">
+            <div class="form-header">
+                @Html.Raw(Res.Get("FormsResources", "LeaseContactHeader"))
+            </div>
+            <p class="optional">@Html.Resource("LabelFieldOptional", "FormsResources")</p>
+            <div class="form-error" id="InvalidParameters">@Html.Resource("InvalidParameters", "FormsResources")</div>
+
+            <section>
+                <div class="form-group checkbox">
+                    <fieldset>
+                        <legend class="text-label">@Html.Resource("LeaseContactLabelConsultation", "FormsResources")</legend>
+                        @foreach (ConsultationList consultation in Enum.GetValues(typeof(ConsultationList)))
+                        {
+                            string checkboxId = string.Concat("chkConsultation_", consultation);
+                            string displayName = consultation.GetDisplayName();
+                            <span class="checkbox">
+                                <input id="@checkboxId"
+                                       type="checkbox"
+                                       name="Consultation"
+                                       value="@consultation"
+                                       @if (Model.Consultation.Contains(consultation.ToString())) { <text> checked </text> } />
+                                <label for="@checkboxId">@displayName</label>
+                            </span>
+                            <br />
+                        }
+                        <span class="form-error" id="ConsultationRequired">@Html.Resource("ErrorRequiredSelectOne", "FormsResources")</span>
+                    </fieldset>
+                </div>
+
+                <div class="form-group radio">
+                    <fieldset>
+                        <legend class="text-label">@Html.Resource("LeaseContactLabelFacility", "FormsResources")</legend>
+                        @foreach (FacilityType facility in Enum.GetValues(typeof(FacilityType)))
+                        {
+                            string radioButtonId = string.Concat("chkFacility_", facility);
+                            string displayName = facility.GetDisplayName();
+                            <span class="radio">
+                                <input id="@radioButtonId"
+                                       type="radio"
+                                       name="Facility"
+                                       value="@facility"
+                                       @if (Model.Facility.Contains(facility.ToString())) { <text> checked </text> } />
+                                <label for="@radioButtonId">@displayName</label>
+                            </span>
+                            <br />
+                        }
+                        <span class="form-error" id="FacilityRequired">@Html.Resource("LeaseContactErrorSpecifyFacility", "FormsResources")</span>
+                    </fieldset>
+                </div>
+
+                <div class="form-group">
+                    <label for="Name">@Html.Resource("LabelName", "FormsResources")</label>
+                    @Html.TextBoxFor(model => model.Name, new { maxlength = "50", autocomplete = "given-name" })
+                    <span class="form-error" id="NameRequired">@Html.Resource("ErrorRequiredName", "FormsResources")</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Email">@Html.Resource("LabelEmail", "FormsResources")</label>
+                    @Html.TextBoxFor(model => model.Email, new { maxlength = "50", autocomplete = "email", type = "email" })
+                    <span class="form-error" id="EmailRequired">@Html.Resource("ErrorRequiredEmail", "FormsResources")</span>
+                    <span class="form-error" id="InvalidEmail">@Html.Resource("ErrorInvalidEmail", "FormsResources")</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Phone">@Html.Raw(Res.Get("FormsResources", "LabelPhone"))<span class="optional"> @Html.Resource("LabelOptional", "FormsResources")</span></label>
+                    @Html.TextBoxFor(model => model.Phone, new { maxlength = "25", autocomplete = "tel", type = "tel", placeholder = "(222) 333-4444" })
+                    <span class="form-error" id="InvalidPhone">@Html.Resource("ErrorInvalidPhone", "FormsResources")</span>
+                </div>
+            </section>
+
+            <div class="form-group expanded checkbox consent text-small">
+                <input type="checkbox" id="Consent" name="Consent" value="true" @(Model.Consent ? "checked=\"checked\"" : "") />
+                <label for="Consent">
+                    @Html.Raw(Res.Get("FormsResources", "LabelPrivacy"))
+                </label>
+            </div>
+
+            <div class="form-group">
+                <button type="button" class="button expanded" id="LeaseContactButtonSubmit">@Html.Resource("LeaseContactButtonSubmit", "FormsResources")</button>
+            </div>
+
+            <div class="form-error" id="ErrorOccurred">@Html.Resource("MsgErrorOccured", "FormsResources")</div>
+            <div class="form-success hide" id="SuccessMessage">@Html.Resource("LeaseContactLabelSuccess", "FormsResources")</div>
+        </div>
+    </div>
+}
+
+@Html.ScriptCustom("/Sitefinity/WebsiteTemplates/MyTemplate/js/forms/lease-contact-form.js", "bottom", false, false)
