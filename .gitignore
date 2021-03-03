@@ -92,3 +92,5 @@ Generated_Code #added for RIA/Silverlight projects
 UpgradeLog*.htm
 
 App_Data/Sitefinity/Search*/
+App_Data/Sitefinity/Sitefinity.lic
+App_Data/GeoLocation/*
